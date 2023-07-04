@@ -45,12 +45,16 @@ export default class Paciente {
     }
 
     #validaCpf(cpf) {
-        return true;
+        if (cpf.length === 11) {
+            this.#validaDigitosCPF(cpf);
+        } else {
+            throw new UserException("CPF inválido (precisa ter 11 dígitos)");
+        }
     }
 
     #validaNome(nome) {
         if (nome.length < 5) {
-            throw new UserException("CPF inválido");
+            throw new UserException("Nome inválido (precisa ter 5 dígitos)");
         }
 
         return true;
@@ -58,5 +62,17 @@ export default class Paciente {
 
     #validaDataNascimento(dataNascimento) {
         return true;
+    }
+
+    #validaDigitosCPF(cpf) {
+        let digito = cpf.toString()[0];
+        
+        cpf.toString().forEach(n => {
+            if(n !== digito) {
+                return true;
+            }
+        });
+
+        throw new UserException("CPF inválido (caracteres iguais)");
     }
 }
