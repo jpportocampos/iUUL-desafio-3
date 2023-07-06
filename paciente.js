@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 function UserException(message) {
     this.message = message;
     this.name = "UserException";
@@ -63,6 +65,15 @@ export default class Paciente {
     }
 
     #validaDataNascimento(dataNascimento) {
+        let data = DateTime.fromFormat(dataNascimento, "dd/LL/yyyy");
+        let dataAtual = DateTime.now();
+
+        var diffTempo = dataAtual.diff(data, ['months', 'days', 'years']).toObject();
+
+        if (diffTempo.years < 13) {
+            throw new UserException("O paciente é muito novo (precisa ter no mínimo 13 anos de idade)");
+        }
+
         return true;
     }
 
