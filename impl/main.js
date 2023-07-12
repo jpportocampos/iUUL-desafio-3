@@ -42,9 +42,9 @@ function menuCadastro() {
     } else if (selecaoCadastro === "2") {
         excluiPaciente();
     } else if (selecaoCadastro === "3") {
-        //função para listar pacientes por cpf
+        listarPacienteCpf();
     } else if (selecaoCadastro === "4") {
-        //função para listar pacientes por nome
+        listarPacienteNome();
     } else if (selecaoCadastro === "5") {
         menuPrincipal();
     } else {
@@ -88,4 +88,20 @@ function excluiPaciente() {
     let cpf = prompt("CPF: ");
 
     pacienteController.delete(cpf);
+}
+
+function listarPacienteCpf() {
+    let pacientes = pacienteController.listarCpf();
+
+    //adicionar tela de acordo com enunciado
+
+    console.log(pacientes);
+}
+
+function listarPacienteNome() {
+    let pacientes = pacienteController.listarNome();
+
+    //adicionar tela de acordo com enunciado
+
+    console.log(pacientes);
 }

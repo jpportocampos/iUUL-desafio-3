@@ -32,6 +32,14 @@ export default class PacienteService {
         return this.#pacienteRepository.delete(cpf);
     }
 
+    listarCpf() {
+        return this.#pacienteRepository.getAllCpf();
+    }
+
+    listarNome() {
+        return this.#pacienteRepository.getAllNome();
+    }
+
     #validaCpf(cpf) {
         if (!this.#validaCadastro(cpf)) {
             throw new UserException("CPF já cadastrado");

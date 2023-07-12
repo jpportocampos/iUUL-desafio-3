@@ -25,4 +25,16 @@ export default class PacienteRepository {
 
         return "N/A";
     }
+
+    getAllCpf() {
+        listCpf = this.pacientes.sort((a, b) => (a.cpf > b.cpf) ? 1 : -1);
+
+        return listCpf;
+    }
+
+    getAllNome() {
+        listNome = this.pacientes.sort((a, b) => (a.nome > b.nome) ? 1 : -1);
+
+        return listNome;
+    }
 }

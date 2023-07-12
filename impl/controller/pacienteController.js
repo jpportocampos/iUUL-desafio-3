@@ -18,4 +18,12 @@ export default class PacienteController {
 
         return false;
     }
+
+    listarCpf() {
+        return this.#pacienteService.listarCpf();
+    }
+
+    listarNome() {
+        return this.#pacienteService.listarNome();
+    }
 }
