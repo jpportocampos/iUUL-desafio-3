@@ -1,9 +1,11 @@
 import PromptSync from 'prompt-sync';
 import PacienteController from './controller/pacienteController';
+import ConsultaController from './controller/consultaController';
 
 const prompt = PromptSync({ sigint: true });
 
 const pacienteController = new PacienteController();
+const consultaController = new ConsultaController();
 
 menuPrincipal();
 
@@ -63,11 +65,11 @@ function menuAgenda() {
     let selecaoAgenda = prompt("");
 
     if (selecaoAgenda === "1") {
-        //função para agendar consulta
+        agendaConsulta();
     } else if (selecaoAgenda === "2") {
-        //função para cancelar agendamento
+        cancelaConsulta();
     } else if (selecaoAgenda === "3") {
-        //função para listar agenda
+        listarAgenda();
     } else if (selecaoAgenda === "4") {
         menuPrincipal();
     } else {
@@ -104,4 +106,29 @@ function listarPacienteNome() {
     //adicionar tela de acordo com enunciado
 
     console.log(pacientes);
+}
+
+function agendaConsulta() {
+    let cpf = prompt("CPF: ");
+    let data = prompt("Data da consulta: ");
+    let horaInicial = prompt("Hora inicial: ");
+    let horaFinal = prompt("Hora final: ");
+
+    consultaController.save(cpf, data, horaInicial, horaFinal);
+}
+
+function cancelaConsulta() {
+    let cpf = prompt("CPF: ");
+    let data = prompt("Data da consulta: ");
+    let horaInicial = prompt("Hora inicial: ");
+
+    consultaController.delete(cpf, data, horaInicial, horaFinal);
+}
+
+function listarAgenda() {
+    let consultas = consultaController.listarAgenda();
+
+    //adicionar tela de acordo com enunciado
+
+    console.log(consultas);
 }

@@ -1,83 +1,45 @@
-import { DateTime } from "luxon";
-
-function UserException(message) {
-    this.message = message;
-    this.name = "UserException";
-}
-
 export default class Consulta {
     #cpfPaciente;
-    #dataIni;
-    #dataFin;
+    #data;
+    #horaInicial;
+    #horaFinal;
 
-    constructor(paciente, data, horaInicial, horaFinal) {
-        let dataInicial = "";
-        let dataFinal = "";
-        if (horaFinal <= horaInicial) {
-            throw new UserException("Horário inválido (A hora final deve ser maior que a hora inicial)");
-        }
-        this.#cpfPaciente = paciente.cpf;
-        if (this.#validaHorario(horaInicial)) {
-            dataInicial = data + " " + horaInicial;
-        }
-        if (this.#validaHorario(horaFinal)) {
-            dataFinal = data + " " + horaFinal;
-        }
-        if (this.#validaData(dataInicial)) {
-            let dataIni = DateTime.fromFormat(dataInicial, "dd/LL/yyyy HHmm");
-            this.#dataIni = dataIni;
-        }
-        if (this.#validaData(dataFinal)) {
-            let dataFin = DateTime.fromFormat(dataFinal, "dd/LL/yyyy HHmm");
-            this.#dataFin = dataFin;
-        }
+    constructor(cpfPaciente, data, horaInicial, horaFinal) {
+        this.#cpfPaciente = cpfPaciente
+        this.#data = data;
+        this.#horaInicial = horaInicial;
+        this.#horaFinal = horaFinal;
     }
 
     get cpfPaciente() {
         return this.#cpfPaciente;
     }
 
-    get dataIni() {
-        return this.#dataIni;
+    get data() {
+        return this.#data;
     }
 
-    get dataFin() {
-        return this.#dataFin;
+    get horaInicial() {
+        return this.#horaInicial;
+    }
+
+    get horaFinal() {
+        return this.#horaFinal;
     }
 
     set cpfPacienteConsulta(cpfPaciente) {
         this.#cpfPaciente = cpfPaciente;
     }
 
-    set dataIniConsulta(dataIni) {
-        this.#dataIni = dataIni;
+    set dataConsulta(data) {
+        this.#data = data;
     }
     
-    set dataFinConsulta(dataFin) {
-        this.#dataFin = dataFin;
+    set horaInicialConsulta(horaInicial) {
+        this.#horaInicial = horaInicial;
     }
-
-    #validaData(data) {
-        let dataConsulta = DateTime.fromFormat(data, "dd/LL/yyyy HHmm");
-        let dataAtual = DateTime.now();
-
-        if (dataConsulta > dataAtual) {
-            return true;
-        }
-
-        throw new UserException("A data da consulta é inválida (precisa ser futura em relação a data atual)");
-    }
-
-    #validaHorario(horario){
-        const min = horario.toString().slice(2);
-        const hora = horario.toString().slice(0, 2);
-
-        if (parseInt(min) === 0 || parseInt(min) === 15 || parseInt(min) === 30) {
-            if (parseInt(hora) > 8 || parseInt(hora) < 19) {
-                return true;
-            }
-        }
-
-        throw new UserException("Horário inválido (Os horários são definidos de 15 em 15 minutos)");
+    
+    set horaFinalConsulta(horaFinal) {
+        this.#horaFinal = horaFinal;
     }
 }

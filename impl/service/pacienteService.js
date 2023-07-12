@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import PacienteRepository from "../repository/pacienteRepository";
+import ConsultaRepository from "../repository/consultaRepository";
 import Paciente from "../entity/paciente";
 
 function UserException(message) {
@@ -9,6 +10,7 @@ function UserException(message) {
 
 export default class PacienteService {
     #pacienteRepository = new PacienteRepository();
+    #consultaRepository = new ConsultaRepository();
 
     salvar(cpf, nome, dataNascimento) {
         this.#validaCpf(cpf);
@@ -27,7 +29,9 @@ export default class PacienteService {
             throw new UserException("Paciente não cadastrado")
         }
 
-        //adicionar lógica para paciente já agendado
+        if (this.#consultaRepository.findByCpf(cpf)) {
+            throw new UserException("Paciente já agendado (não pode deletar)")
+        }
 
         return this.#pacienteRepository.delete(cpf);
     }
