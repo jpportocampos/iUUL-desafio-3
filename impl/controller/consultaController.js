@@ -1,4 +1,4 @@
-import ConsultaService from "../service/consultaService";
+import ConsultaService from "../service/consultaService.js";
 
 export default class ConsultaController {
     #consultaService = new ConsultaService();

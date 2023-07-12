@@ -1,4 +1,4 @@
-import PacienteService from "../service/pacienteService";
+import PacienteService from "../service/pacienteService.js";
 
 export default class PacienteController {
     #pacienteService = new PacienteService();

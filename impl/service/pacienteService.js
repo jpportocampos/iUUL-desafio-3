@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
-import PacienteRepository from "../repository/pacienteRepository";
-import ConsultaRepository from "../repository/consultaRepository";
-import Paciente from "../entity/paciente";
+import PacienteRepository from "../repository/pacienteRepository.js";
+import ConsultaRepository from "../repository/consultaRepository.js";
+import Paciente from "../entity/paciente.js";
 
 function UserException(message) {
     this.message = message;

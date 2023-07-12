@@ -1,6 +1,6 @@
 import PromptSync from 'prompt-sync';
-import PacienteController from './controller/pacienteController';
-import ConsultaController from './controller/consultaController';
+import PacienteController from './controller/pacienteController.js';
+import ConsultaController from './controller/consultaController.js';
 
 const prompt = PromptSync({ sigint: true });
 
