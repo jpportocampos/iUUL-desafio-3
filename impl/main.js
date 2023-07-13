@@ -1,5 +1,4 @@
 import PromptSync from 'prompt-sync';
-import { DateTime } from 'luxon';
 import PacienteController from './controller/pacienteController.js';
 import ConsultaController from './controller/consultaController.js';
 
@@ -103,10 +102,17 @@ function cadastroPaciente() {
     let dataNascimento = prompt("Data de nascimento: ");
     console.log(" ");
 
-    if (pacienteController.save(cpf, nome, dataNascimento)) {
-        console.log("Paciente cadastrado com sucesso!");
-        console.log(" ");
-        menuCadastro();
+    try {
+        if (pacienteController.save(cpf, nome, dataNascimento)) {
+            console.log("Paciente cadastrado com sucesso!");
+            console.log(" ");
+            menuCadastro();
+        }
+      }
+    catch (err) {
+        console.log(err);
+            console.log(" ");
+            cadastroPaciente();
     }
 }
 
@@ -114,10 +120,18 @@ function excluiPaciente() {
     let cpf = prompt("CPF: ");
     console.log(" ");
 
-    if (pacienteController.delete(cpf)) {
-        console.log("Paciente excluído com sucesso!");
-        console.log(" ");
-        menuCadastro();
+    
+    try {
+        if (pacienteController.delete(cpf)) {
+            console.log("Paciente excluído com sucesso!");
+            console.log(" ");
+            menuCadastro();
+        }
+      }
+    catch (err) {
+        console.log(err);
+            console.log(" ");
+            excluiPaciente();
     }
 }
 
@@ -155,10 +169,17 @@ function agendaConsulta() {
     let horaInicial = prompt("Hora inicial: ");
     let horaFinal = prompt("Hora final: ");
 
-    if (consultaController.save(cpf, data, horaInicial, horaFinal)) {
-        console.log("Agendamento realizado com sucesso!");
-        console.log(" ");
-        menuAgenda();
+    try {
+        if (consultaController.save(cpf, data, horaInicial, horaFinal)) {
+            console.log("Agendamento realizado com sucesso!");
+            console.log(" ");
+            menuAgenda();
+        }
+      }
+    catch (err) {
+        console.log(err);
+            console.log(" ");
+            agendaConsulta();
     }
 }
 
@@ -167,10 +188,17 @@ function cancelaConsulta() {
     let data = prompt("Data da consulta: ");
     let horaInicial = prompt("Hora inicial: ");
 
-    if (consultaController.delete(cpf, data, horaInicial)) {
-        console.log("Agendamento cancelado com sucesso!");
-        console.log(" ");
-        menuAgenda();
+    try {
+        if (consultaController.delete(cpf, data, horaInicial)) {
+            console.log("Agendamento cancelado com sucesso!");
+            console.log(" ");
+            menuAgenda();
+        }
+      }
+    catch (err) {
+        console.log(err);
+            console.log(" ");
+            cancelaConsulta();
     }
 }
 
