@@ -53,6 +53,8 @@ export default class PacienteService {
     listarCpf() {
         let listCpf = this.#pacienteRepository.getAllCpf();
 
+        listCpf = this.#getConsulta(listCpf);
+
         listCpf.forEach(n => {
             n.idade = this.#calculaIdade(n.dataNascimento)
         });
@@ -62,6 +64,8 @@ export default class PacienteService {
 
     listarNome() {
         let listNome = this.#pacienteRepository.getAllNome();
+
+        listNome = this.#getConsulta(listNome);
 
         listNome.forEach(n => {
             n.idade = this.#calculaIdade(n.dataNascimento)
@@ -204,5 +208,17 @@ export default class PacienteService {
         var diffTempo = dataAtual.diff(data, ['months', 'days', 'years']).toObject();
     
         return diffTempo.years
+    }
+
+    #getConsulta(list) {
+        for (let index = 0; index < list.length; index++) {
+            let consulta = this.#consultaRepository.findByCpf(list[index].cpf);
+            if (consulta !== "N/A") {
+                list[index].dataConsulta = "Agendado para: " + consulta.data;
+                list[index].horaConsulta = consulta.horaInicial + " às " + consulta.horaFinal;
+            }
+        }
+
+        return list;
     }
 }
