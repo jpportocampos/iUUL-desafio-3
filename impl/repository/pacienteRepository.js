@@ -1,25 +1,28 @@
+import { pacientes } from "../data/pacientes.js";
+
 export default class PacienteRepository {
-    pacientes = [];
+    pacientesList = pacientes;
 
     save(paciente) {
-        this.pacientes.push(paciente);
+        pacientes.push(paciente);
+        return true;
     }
 
     delete(cpf) {
-        for (let index = 0; index < this.pacientes.length; index++) {
-            if (this.pacientes[index].cpf === cpf) {
-                this.pacientes.splice(index, index);
+        for (let index = 0; index < pacientes.length; index++) {
+            if (pacientes[index].cpf === cpf) {
+                pacientes.splice(index, 1);
                 return true;
             }
         }
 
-        return false;
+        return "N/A";
     }
 
     findByCpf(cpf) {
-        for (let index = 0; index < this.pacientes.length; index++) {
-            if (this.pacientes[index].cpf === cpf) {
-                return this.pacientes[index];
+        for (let index = 0; index < pacientes.length; index++) {
+            if (pacientes[index].cpf === cpf) {
+                return pacientes[index];
             }
         }
 
@@ -27,13 +30,13 @@ export default class PacienteRepository {
     }
 
     getAllCpf() {
-        listCpf = this.pacientes.sort((a, b) => (a.cpf > b.cpf) ? 1 : -1);
+        let listCpf = pacientes.sort((a, b) => (a.cpf > b.cpf) ? 1 : -1);
 
         return listCpf;
     }
 
     getAllNome() {
-        listNome = this.pacientes.sort((a, b) => (a.nome > b.nome) ? 1 : -1);
+        let listNome = pacientes.sort((a, b) => (a.nome > b.nome) ? 1 : -1);
 
         return listNome;
     }

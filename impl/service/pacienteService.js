@@ -29,59 +29,87 @@ export default class PacienteService {
             throw new UserException("Paciente não cadastrado")
         }
 
-        if (this.#consultaRepository.findByCpf(cpf)) {
-            throw new UserException("Paciente já agendado (não pode deletar)")
+        for (let index = 0; index < this.#consultaRepository.consultasList.length; index++) {
+            let consulta = this.#consultaRepository.findByCpf(cpf);
+
+            if (consulta === "N/A") {
+                break;
+            }
+
+            let dataCompleta = consulta.data + " " + consulta.horaInicial;
+            let dataConsulta = DateTime.fromFormat(dataCompleta, "dd/LL/yyyy HHmm");
+            let dataAtual = DateTime.now();
+
+            if (dataConsulta > dataAtual) {
+                throw new UserException("Erro: paciente já agendado para consulta futura")
+            }
+
+            this.#consultaRepository.delete(cpf, consulta.data, consulta.horaInicial);
         }
 
         return this.#pacienteRepository.delete(cpf);
     }
 
     listarCpf() {
-        return this.#pacienteRepository.getAllCpf();
+        let listCpf = this.#pacienteRepository.getAllCpf();
+
+        listCpf.forEach(n => {
+            n.idade = this.#calculaIdade(n.dataNascimento)
+        });
+
+        return listCpf;
     }
 
     listarNome() {
-        return this.#pacienteRepository.getAllNome();
+        let listNome = this.#pacienteRepository.getAllNome();
+
+        listNome.forEach(n => {
+            n.idade = this.#calculaIdade(n.dataNascimento)
+        });
+
+        return listNome;
     }
 
     #validaCpf(cpf) {
         if (!this.#validaCadastro(cpf)) {
-            throw new UserException("CPF já cadastrado");
+            throw new UserException("Erro: CPF já cadastrado");
         }
         if (cpf.length === 11) {
             this.#validaDigitosCPF(cpf);
             this.#validaJ(cpf);
             this.#validaK(cpf);
         } else {
-            throw new UserException("CPF inválido (precisa ter 11 dígitos)");
+            throw new UserException("Erro: CPF inválido, precisa ter 11 dígitos");
         }
     }
 
     #validaNome(nome) {
         if (nome.length < 5) {
-            throw new UserException("Nome inválido (precisa ter 5 dígitos)");
+            throw new UserException("Erro: nome inválido, precisa ter pelo menos 5 caracteres");
         }
 
         return true;
     }
 
     #validaDataNascimento(dataNascimento) {
+        if (dataNascimento[2] !== "/" || dataNascimento[5] !== "/" || dataNascimento.length !== 10) {
+            throw new UserException("Erro: a data precisa estar no formato dd/mm/yyyy");
+        }
+
         let data = DateTime.fromFormat(dataNascimento, "dd/LL/yyyy");
         let dataAtual = DateTime.now();
 
         var diffTempo = dataAtual.diff(data, ['months', 'days', 'years']).toObject();
 
         if (diffTempo.years < 13) {
-            throw new UserException("O paciente é muito novo (precisa ter no mínimo 13 anos de idade)");
+            throw new UserException("Erro: paciente deve ter pelo menos 13 anos");
         }
 
         return true;
     }
 
     #validaCadastro(cpf) {
-        const paciente = this.#pacienteRepository.findByCpf(cpf);
-
-        if (paciente === "N/A") {
+        if (this.#pacienteRepository.findByCpf(cpf) === "N/A") {
             return true;
         }
 
@@ -89,15 +117,15 @@ export default class PacienteService {
     }
 
     #validaDigitosCPF(cpf) {
-        let digito = cpf.toString()[0];
-        
-        cpf.toString().forEach(n => {
-            if(n !== digito) {
+        let digito = cpf[0];
+
+        for (let index = 0; index < cpf.length; index++) {
+            if (cpf[index] !== digito) {
                 return true;
             }
-        });
+        }
 
-        throw new UserException("CPF inválido (caracteres iguais)");
+        throw new UserException("Erro: CPF inválido, dígitos não podem ser todos iguais");
     }
 
     #validaJ(cpf) {
@@ -119,14 +147,16 @@ export default class PacienteService {
 
         if (resto === 0 || resto === 1) {
             if (parseInt(j) !== 0) {
-                throw new UserException("CPF inválido (1º dígito verificador não é válido)");
+                throw new UserException("Erro: CPF inválido, 1º dígito verificador não é válido");
+            } else {
+                return true;
             }
         } else if (resto >= 2 && resto <= 10) {
             if (parseInt(j) !== (11 - resto)) {
-                throw new UserException("CPF inválido (1º dígito verificador não é válido)");
+                throw new UserException("Erro: CPF inválido, 1º dígito verificador não é válido");
+            } else {
+                return false;
             }
-        } else {
-            throw new UserException("CPF inválido (1º dígito verificador não é válido)");
         }
 
         return true;
@@ -152,16 +182,27 @@ export default class PacienteService {
 
         if (resto === 0 || resto === 1) {
             if (parseInt(k) !== 0) {
-                throw new UserException("CPF inválido (2º dígito verificador não é válido)");
+                throw new UserException("Erro: CPF inválido, 2º dígito verificador não é válido");
+            } else {
+                return true;
             }
         } else if (resto >= 2 && resto <= 10) {
             if (parseInt(k) !== (11 - resto)) {
-                throw new UserException("CPF inválido (2º dígito verificador não é válido)");
+                throw new UserException("Erro: CPF inválido, 2º dígito verificador não é válido");
+            } else {
+                return true;
             }
-        } else {
-            throw new UserException("CPF inválido (1º dígito verificador não é válido)");
         }
 
-        return true;
+        return false;
+    }
+
+    #calculaIdade(dataNascimento) {
+        let data = DateTime.fromFormat(dataNascimento, "dd/LL/yyyy");
+        let dataAtual = DateTime.now();
+    
+        var diffTempo = dataAtual.diff(data, ['months', 'days', 'years']).toObject();
+    
+        return diffTempo.years
     }
 }

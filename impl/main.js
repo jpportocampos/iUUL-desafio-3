@@ -1,4 +1,5 @@
 import PromptSync from 'prompt-sync';
+import { DateTime } from 'luxon';
 import PacienteController from './controller/pacienteController.js';
 import ConsultaController from './controller/consultaController.js';
 
@@ -18,13 +19,17 @@ function menuPrincipal() {
     let selecaoPrincipal = prompt("");
 
     if (selecaoPrincipal === "1") {
+        console.log(" ");
         menuCadastro();
     } else if (selecaoPrincipal === "2") {
+        console.log(" ");
         menuAgenda()
     } else if (selecaoPrincipal === "3") {
         return;
     } else {
+        console.log(" ");
         console.log("Selecione uma opção válida do menu: ");
+        console.log(" ");
         menuPrincipal();
     }
 }
@@ -40,17 +45,24 @@ function menuCadastro() {
     let selecaoCadastro = prompt("");
 
     if (selecaoCadastro === "1") {
+        console.log(" ");
         cadastroPaciente();
     } else if (selecaoCadastro === "2") {
+        console.log(" ");
         excluiPaciente();
     } else if (selecaoCadastro === "3") {
+        console.log(" ");
         listarPacienteCpf();
     } else if (selecaoCadastro === "4") {
+        console.log(" ");
         listarPacienteNome();
     } else if (selecaoCadastro === "5") {
+        console.log(" ");
         menuPrincipal();
     } else {
+        console.log(" ");
         console.log("Selecione uma opção válida do menu: ");
+        console.log(" ");
         menuCadastro();
     }
 }
@@ -63,17 +75,24 @@ function menuAgenda() {
     console.log("4-Voltar p/ menu principal ");
 
     let selecaoAgenda = prompt("");
+    console.log(" ");
 
     if (selecaoAgenda === "1") {
+        console.log(" ");
         agendaConsulta();
     } else if (selecaoAgenda === "2") {
+        console.log(" ");
         cancelaConsulta();
     } else if (selecaoAgenda === "3") {
+        console.log(" ");
         listarAgenda();
     } else if (selecaoAgenda === "4") {
+        console.log(" ");
         menuPrincipal();
     } else {
+        console.log(" ");
         console.log("Selecione uma opção válida do menu: ");
+        console.log(" ");
         menuAgenda();
     }
 }
@@ -82,30 +101,52 @@ function cadastroPaciente() {
     let cpf = prompt("CPF: ");
     let nome = prompt("Nome: ");
     let dataNascimento = prompt("Data de nascimento: ");
+    console.log(" ");
 
-    pacienteController.save(cpf, nome, dataNascimento);
+    if (pacienteController.save(cpf, nome, dataNascimento)) {
+        console.log("Paciente cadastrado com sucesso!");
+        console.log(" ");
+        menuCadastro();
+    }
 }
 
 function excluiPaciente() {
     let cpf = prompt("CPF: ");
+    console.log(" ");
 
-    pacienteController.delete(cpf);
+    if (pacienteController.delete(cpf)) {
+        console.log("Paciente excluído com sucesso!");
+        console.log(" ");
+        menuCadastro();
+    }
 }
 
 function listarPacienteCpf() {
     let pacientes = pacienteController.listarCpf();
 
-    //adicionar tela de acordo com enunciado
-
-    console.log(pacientes);
+    console.log("------------------------------------------------------------");
+    console.log("CPF         Nome               Dt.Nasc.                Idade");
+    console.log("------------------------------------------------------------");
+    pacientes.forEach(n => {
+        console.log(n.cpf + " " + n.nome + "         " + n.dataNascimento + "                " + n.idade);
+    });
+    console.log("------------------------------------------------------------");
+    console.log(" ");
+    menuCadastro();
 }
 
 function listarPacienteNome() {
     let pacientes = pacienteController.listarNome();
 
-    //adicionar tela de acordo com enunciado
-
-    console.log(pacientes);
+    console.log("------------------------------------------------------------");
+    console.log("CPF         Nome               Dt.Nasc.                Idade");
+    console.log("------------------------------------------------------------");
+    pacientes.forEach(n => {
+        console.log(n.cpf + " " + n.nome + "         " + n.dataNascimento + "                " + n.idade);
+    });
+    console.log("------------------------------------------------------------");
+    console.log(" ");
+    menuCadastro();
 }
 
 function agendaConsulta() {
@@ -114,7 +155,11 @@ function agendaConsulta() {
     let horaInicial = prompt("Hora inicial: ");
     let horaFinal = prompt("Hora final: ");
 
-    consultaController.save(cpf, data, horaInicial, horaFinal);
+    if (consultaController.save(cpf, data, horaInicial, horaFinal)) {
+        console.log("Agendamento realizado com sucesso!");
+        console.log(" ");
+        menuAgenda();
+    }
 }
 
 function cancelaConsulta() {
@@ -122,13 +167,23 @@ function cancelaConsulta() {
     let data = prompt("Data da consulta: ");
     let horaInicial = prompt("Hora inicial: ");
 
-    consultaController.delete(cpf, data, horaInicial, horaFinal);
+    if (consultaController.delete(cpf, data, horaInicial)) {
+        console.log("Agendamento cancelado com sucesso!");
+        console.log(" ");
+        menuAgenda();
+    }
 }
 
 function listarAgenda() {
     let consultas = consultaController.listarAgenda();
 
-    //adicionar tela de acordo com enunciado
-
-    console.log(consultas);
+    console.log("------------------------------------------------------------");
+    console.log("Data       H.ini H.fim Tempo Nome                  Dt.Nasc.");
+    console.log("------------------------------------------------------------");
+    consultas.forEach(n => {
+        console.log(n.data + " " + n.horaInicial + " " + n.horaFinal + " " + n.tempo + " " + n.nome + "         " + n.dataNascimento);
+    });
+    console.log("------------------------------------------------------------");
+    console.log(" ");
+    menuAgenda();
 }
