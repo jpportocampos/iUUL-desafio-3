@@ -203,7 +203,41 @@ function cancelaConsulta() {
 }
 
 function listarAgenda() {
-    let consultas = consultaController.listarAgenda();
+    let tipoLista = prompt("Apresentar a agenda T-Toda ou P-Periodo: ");
+
+    if (tipoLista === "T") {
+        console.log(" ");
+        listarAgendaT();
+    } else if (tipoLista === "P") {
+        console.log(" ");
+        listarAgendaP();
+    } else {
+        console.log(" ");
+        console.log("Selecione uma opção válida: ");
+        console.log(" ");
+        listarAgenda();
+    }
+}
+
+function listarAgendaT() {
+    let consultas = consultaController.listarAgendaToda();
+
+    console.log("------------------------------------------------------------");
+    console.log("Data       H.ini H.fim Tempo Nome                  Dt.Nasc.");
+    console.log("------------------------------------------------------------");
+    consultas.forEach(n => {
+        console.log(n.data + " " + n.horaInicial + " " + n.horaFinal + " " + n.tempo + " " + n.nome + "         " + n.dataNascimento);
+    });
+    console.log("------------------------------------------------------------");
+    console.log(" ");
+    menuAgenda();
+}
+
+function listarAgendaP() {
+    let dataIni = prompt("Data inicial: ");
+    let dataFin = prompt("Data final: ");
+
+    let consultas = consultaController.listarAgendaParcial(dataIni, dataFin);
 
     console.log("------------------------------------------------------------");
     console.log("Data       H.ini H.fim Tempo Nome                  Dt.Nasc.");

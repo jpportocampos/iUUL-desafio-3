@@ -35,7 +35,7 @@ export default class ConsultaService {
         return this.#consultaRepository.delete(cpf, data, horaInicial);
     }
 
-    listarAgenda() {
+    listarAgendaToda() {
         let list = this.#consultaRepository.getAll();
 
         
@@ -50,9 +50,34 @@ export default class ConsultaService {
         return list;
     }
 
+    listarAgendaParcial(dataIni, dataFin) {
+        let list = this.#consultaRepository.getAll();
+        let dataInicial = DateTime.fromFormat(dataIni.toString(), "dd/LL/yyyy");
+        let dataFinal = DateTime.fromFormat(dataFin.toString(), "dd/LL/yyyy");
+
+        for (let index = 0; index < list.length; index++) {
+            let dataConsulta = DateTime.fromFormat(list[index].data, "dd/LL/yyyy");
+            if (dataConsulta < dataInicial || dataConsulta > dataFinal) {
+                list.splice(index, 1);
+            } else {
+                list[index].tempo = this.#calculaTempo(list[index].horaInicial, list[index].horaFinal);
+                list[index].horaInicialConsulta = DateTime.fromFormat(list[index].horaInicial, "HHmm").toFormat("HH:mm");
+                list[index].horaFinalConsulta = DateTime.fromFormat(list[index].horaFinal, "HHmm").toFormat("HH:mm");
+                list[index].nome = this.#pacienteRepository.findByCpf(list[index].cpfPaciente).nome;
+                list[index].dataNascimento = this.#pacienteRepository.findByCpf(list[index].cpfPaciente).dataNascimento;
+            }
+        }
+
+        return list;
+    }
+
     #validaData(data, horaInicial, paciente) {
         if (data[2] !== "/" || data[5] !== "/" || data.length !== 10) {
             throw new UserException("Erro: a data precisa estar no formato dd/mm/yyyy");
+        }
+
+        if (horaInicial.length !== 4) {
+            throw new UserException("Erro: os horários precisam estar no formato HHmm");
         }
 
         let dataCompleta = data + " " + horaInicial;
@@ -60,10 +85,8 @@ export default class ConsultaService {
         let dataAtual = DateTime.now();
 
         for (let index = 0; index < this.#consultaRepository.consultasList.length; index++) {
-            let consultaPaciente = this.ConsultaRepository.findByCpf(paciente.cpf);
-
-            if (consultaPaciente !== "N/A") {
-                let dataPaciente = consultaPaciente.data + " " + consultaPaciente.horaInicial;    
+            if (paciente !== "N/A") {
+                let dataPaciente = paciente.data + " " + paciente.horaInicial;    
                 let dataConsultaPaciente = DateTime.fromFormat(dataPaciente, "dd/LL/yyyy HHmm");
 
                 if (dataConsultaPaciente > dataAtual) {
@@ -93,10 +116,12 @@ export default class ConsultaService {
         if (parseInt(min) === 0 || parseInt(min) === 15 || parseInt(min) === 30) {
             if (parseInt(hora) > 8 || parseInt(hora) < 19) {
                 return true;
+            } else {
+                throw new UserException("Erro: o consultório funciona apenas entre 8h e 19h");
             }
         }
 
-        throw new UserException("Horário inválido (Os horários são definidos de 15 em 15 minutos)");
+        throw new UserException("Erro: os horários são definidos de 15 em 15 minutos");
     }
 
     #calculaTempo(horaInicial, horaFinal) {

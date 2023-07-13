@@ -19,7 +19,11 @@ export default class ConsultaController {
         return false;
     }
 
-    listarAgenda() {
-        return this.#consultaService.listarAgenda();
+    listarAgendaToda() {
+        return this.#consultaService.listarAgendaToda();
+    }
+
+    listarAgendaParcial(dataIni, dataFin) {
+        return this.#consultaService.listarAgendaParcial(dataIni, dataFin);
     }
 }
