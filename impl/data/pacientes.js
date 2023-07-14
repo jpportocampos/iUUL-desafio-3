@@ -1,1 +1,1 @@
-export let pacientes = [];
+export let pacientes = []; // Lista de pacientes

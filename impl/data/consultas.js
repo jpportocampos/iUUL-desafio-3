@@ -1,1 +1,1 @@
-export let consultas = []; 
+export let consultas = []; // Lista de consultas

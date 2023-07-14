@@ -196,89 +196,105 @@ function listarPacienteNome() {
     menuCadastro(); // Chamada do Menu de Cadastro novamente ao final do processo de listagem
 }
 
+// Função que inicia o agendamento de uma consulta
 function agendaConsulta() {
+    // Inicialização das variáveis através de entradas no console
     let cpf = prompt("CPF: ");
     let data = prompt("Data da consulta: ");
     let horaInicial = prompt("Hora inicial: ");
     let horaFinal = prompt("Hora final: ");
 
+    // Bloco try catch para garantir que a aplicação não finalize depois de gerar uma exceção
     try {
-        if (consultaController.save(cpf, data, horaInicial, horaFinal)) {
-            console.log("Agendamento realizado com sucesso!");
+        if (consultaController.save(cpf, data, horaInicial, horaFinal)) { // Chamada da função do Controller de consulta para salvar uma consulta
+            console.log("Agendamento realizado com sucesso!"); // Imprime a mensagem de sucesso
             console.log(" ");
-            menuAgenda();
+            menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de cadastro
         }
     }
-    catch (err) {
-        console.log(err);
+    catch (err) { // Caso uma exceção seja lançada, coleta a mensagem
+        console.log(err); // Imprime a mensagem da exceção
         console.log(" ");
-        agendaConsulta();
+        agendaConsulta(); // Chama novamente a função de agendar uma consulta para uma nova tentativa
     }
 }
 
+// Função que inicia o cancelamento de uma consulta
 function cancelaConsulta() {
+    // Inicialização das variáveis através de entradas no console
     let cpf = prompt("CPF: ");
     let data = prompt("Data da consulta: ");
     let horaInicial = prompt("Hora inicial: ");
 
+    // Bloco try catch para garantir que a aplicação não finalize depois de gerar uma exceção
     try {
-        if (consultaController.delete(cpf, data, horaInicial)) {
-            console.log("Agendamento cancelado com sucesso!");
+        if (consultaController.delete(cpf, data, horaInicial)) { // Chamada da função do Controller de consulta para excluir uma consulta
+            console.log("Agendamento cancelado com sucesso!"); // Imprime a mensagem de sucesso
             console.log(" ");
-            menuAgenda();
+            menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de cancelamento
         }
     }
-    catch (err) {
-        console.log(err);
+    catch (err) { // Caso uma exceção seja lançada, coleta a mensagem
+        console.log(err); // Imprime a mensagem da exceção
         console.log(" ");
-        cancelaConsulta();
+        cancelaConsulta(); // Chama novamente a função de cancelar uma consulta para uma nova tentativa
     }
 }
 
+// Função que inicia a listagem da agenda
 function listarAgenda() {
+    // Inicialização das variáveis através de entradas no console
     let tipoLista = prompt("Apresentar a agenda T-Toda ou P-Periodo: ");
 
+    // Validações de entrada
     if (tipoLista === "T") {
         console.log(" ");
-        listarAgendaT();
+        listarAgendaT(); // Chamada da função que inicia a listagem total da agenda
     } else if (tipoLista === "P") {
         console.log(" ");
-        listarAgendaP();
+        listarAgendaP(); // Chamada da funçaõ que inicia a listagem parcial da agenda
     } else {
+        // Caso a entrada seja inválida, imprime a mensagem e chama a função de lsitar agenda novamente
         console.log(" ");
-        console.log("Selecione uma opção válida: ");
+        console.log("Selecione uma opção válida do menu: ");
         console.log(" ");
         listarAgenda();
     }
 }
 
+// Função que inicia o processo e listar a agenda total
 function listarAgendaT() {
+    // Coleta a lista de consultas em uma variável através da função de listar agenda toda do Controller de consulta
     let consultas = consultaController.listarAgendaToda();
 
+    // Bloco que imprime o layout de listagem
     console.log("------------------------------------------------------------");
     console.log("Data       H.ini H.fim Tempo Nome                  Dt.Nasc.");
     console.log("------------------------------------------------------------");
-    consultas.forEach(n => {
-        console.log(n.data + " " + n.horaInicial + " " + n.horaFinal + " " + n.tempo + " " + n.nome + "         " + n.dataNascimento);
+    consultas.forEach(n => { // Percorre a lista coletada 
+        console.log(n.data + " " + n.horaInicial + " " + n.horaFinal + " " + n.tempo + " " + n.nome + "         " + n.dataNascimento); // Imprime os dados
     });
     console.log("------------------------------------------------------------");
     console.log(" ");
-    menuAgenda();
+    menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de listagem
 }
 
 function listarAgendaP() {
+    // Inicialização das variáveis através de entradas no console
     let dataIni = prompt("Data inicial: ");
     let dataFin = prompt("Data final: ");
 
+    // Coleta a lista de consultas em uma variável através da função de listar agenda toda do Controller de consulta
     let consultas = consultaController.listarAgendaParcial(dataIni, dataFin);
 
+    // Bloco que imprime o layout de listagem
     console.log("------------------------------------------------------------");
     console.log("Data       H.ini H.fim Tempo Nome                  Dt.Nasc.");
     console.log("------------------------------------------------------------");
-    consultas.forEach(n => {
-        console.log(n.data + " " + n.horaInicial + " " + n.horaFinal + " " + n.tempo + " " + n.nome + "         " + n.dataNascimento);
+    consultas.forEach(n => { // Percorre a lista coletada 
+        console.log(n.data + " " + n.horaInicial + " " + n.horaFinal + " " + n.tempo + " " + n.nome + "         " + n.dataNascimento); // Imprime os dados
     });
     console.log("------------------------------------------------------------");
     console.log(" ");
-    menuAgenda();
+    menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de listagem
 }
