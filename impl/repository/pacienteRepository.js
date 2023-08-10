@@ -1,5 +1,6 @@
 import { pacientes } from "../data/pacientes.js";
 
+
 export default class PacienteRepository {
     pacientesList = pacientes; // Instância da lista de pacientes importada
 

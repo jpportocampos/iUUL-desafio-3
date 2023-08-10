@@ -1,78 +1,90 @@
 import PromptSync from 'prompt-sync';
+import { Sequelize } from "sequelize";
 import PacienteController from './controller/pacienteController.js';
 import ConsultaController from './controller/consultaController.js';
 
-const prompt = PromptSync({ sigint: true }); // Criação do leitor de entradas do consolo
+const prompt = PromptSync({ sigint: true }); // Criação do leitor de entradas do console
 
 const pacienteController = new PacienteController(); // Criação da instância do Controller de Paciente
 const consultaController = new ConsultaController(); // Criação da instância do Controller de Consulta
+
+const sequelize = new Sequelize('postgres://postgres:pass123@localhost:5432/consultorio');
+
+try {
+    await sequelize.authenticate();
+    console.log('Connection has been established successfully.');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
 
 menuPrincipal(); // Chamada da função que inicia o Menu Principal
 
 // Função que inicia o Menu Principal
 function menuPrincipal() {
     // Bloco que imprime no console as opções do Menu Principal
-    console.log("Menu Principal: ");
-    console.log("1-Cadastro de pacientes ");
-    console.log("2-Agenda ");
-    console.log("3-Fim ");
+    for (;;) {
+        console.log("Menu Principal: ");
+        console.log("1-Cadastro de pacientes ");
+        console.log("2-Agenda ");
+        console.log("3-Fim ");
 
-    // Variável que recebe a próxima entrada do console
-    let selecaoPrincipal = prompt("");
+        // Variável que recebe a próxima entrada do console
+        let selecaoPrincipal = prompt("");
 
-    // Validações de entrada
-    if (selecaoPrincipal === "1") {
-        console.log(" ");
-        menuCadastro(); // Chamada da função que inicia o Menu de Cadastro
-    } else if (selecaoPrincipal === "2") {
-        console.log(" ");
-        menuAgenda() // Chamada da função que inicia o Menu de Agenda
-    } else if (selecaoPrincipal === "3") {
-        return; // Finaliza a aplicação
-    } else {
-        // Caso a entrada seja inválida, imprime a mensagem e chama a função do Menu Principal novamente
-        console.log(" ");
-        console.log("Selecione uma opção válida do menu: ");
-        console.log(" ");
-        menuPrincipal();
+        // Validações de entrada
+        if (selecaoPrincipal === "1") {
+            console.log(" ");
+            menuCadastro(); // Chamada da função que inicia o Menu de Cadastro
+        } else if (selecaoPrincipal === "2") {
+            console.log(" ");
+            menuAgenda() // Chamada da função que inicia o Menu de Agenda
+        } else if (selecaoPrincipal === "3") {
+            break; // Finaliza a aplicação
+        } else {
+            // Caso a entrada seja inválida, imprime a mensagem e chama a função do Menu Principal novamente
+            console.log(" ");
+            console.log("Selecione uma opção válida do menu: ");
+            console.log(" ");
+        }
     }
 }
 
 // Função que inicia o Menu de Cadastro
 function menuCadastro() {
     // Bloco que imprime no console as opções do Menu de Cadastro
-    console.log("Menu do Cadastro de Pacientes: ");
-    console.log("1-Cadastrar novo paciente ");
-    console.log("2-Excluir paciente ");
-    console.log("3-Listar pacientes (ordenado por CPF) ");
-    console.log("4-Listar pacientes (ordenado por nome) ");
-    console.log("5-Voltar p/ menu principal ");
+    for (;;) {
+        console.log("Menu do Cadastro de Pacientes: ");
+        console.log("1-Cadastrar novo paciente ");
+        console.log("2-Excluir paciente ");
+        console.log("3-Listar pacientes (ordenado por CPF) ");
+        console.log("4-Listar pacientes (ordenado por nome) ");
+        console.log("5-Voltar p/ menu principal ");
 
-    // Variável que recebe a próxima entrada do console
-    let selecaoCadastro = prompt("");
+        // Variável que recebe a próxima entrada do console
+        let selecaoCadastro = prompt("");
 
-    // Validações de entrada
-    if (selecaoCadastro === "1") {
-        console.log(" ");
-        cadastroPaciente(); // Chamada da função que inicia o cadastro de um paciente
-    } else if (selecaoCadastro === "2") {
-        console.log(" ");
-        excluiPaciente(); // Chamada da função que inicia a exclusão de um paciente
-    } else if (selecaoCadastro === "3") {
-        console.log(" ");
-        listarPacienteCpf(); // Chamada da função que inicia a listagem de pacientes ordenados por cpf
-    } else if (selecaoCadastro === "4") {
-        console.log(" ");
-        listarPacienteNome(); // Chamada da função que inicia a listagem de pacientes ordenados por nome
-    } else if (selecaoCadastro === "5") {
-        console.log(" ");
-        menuPrincipal(); // Chamada da função que retorna para o Menu Principal
-    } else {
-        // Caso a entrada seja inválida, imprime a mensagem e chama a função do Menu de Cadastro novamente
-        console.log(" ");
-        console.log("Selecione uma opção válida do menu: ");
-        console.log(" ");
-        menuCadastro();
+        // Validações de entrada
+        if (selecaoCadastro === "1") {
+            console.log(" ");
+            cadastroPaciente(); // Chamada da função que inicia o cadastro de um paciente
+        } else if (selecaoCadastro === "2") {
+            console.log(" ");
+            excluiPaciente(); // Chamada da função que inicia a exclusão de um paciente
+        } else if (selecaoCadastro === "3") {
+            console.log(" ");
+            listarPacienteCpf(); // Chamada da função que inicia a listagem de pacientes ordenados por cpf
+        } else if (selecaoCadastro === "4") {
+            console.log(" ");
+            listarPacienteNome(); // Chamada da função que inicia a listagem de pacientes ordenados por nome
+        } else if (selecaoCadastro === "5") {
+            console.log(" ");
+            menuPrincipal(); // Chamada da função que retorna para o Menu Principal
+        } else {
+            // Caso a entrada seja inválida, imprime a mensagem e chama a função do Menu de Cadastro novamente
+            console.log(" ");
+            console.log("Selecione uma opção válida do menu: ");
+            console.log(" ");
+        }
     }
 }
 
