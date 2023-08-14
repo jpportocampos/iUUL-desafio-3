@@ -1,4 +1,7 @@
-export default class Paciente {
+import { DataTypes, Model } from "sequelize";
+import { sequelize } from "../utils/database.js";
+
+export default class Paciente extends Model {
     // Atributos do paciente
     #cpf;
     #nome;
@@ -41,3 +44,31 @@ export default class Paciente {
         this.#dataNascimento = dataNascimento;
     }
 }
+
+Paciente.init({
+    cpf: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+            notEmpty: { msg: "O cpf do paciente deve ser preenchido" },
+            unique: true
+        }
+    },
+    nome: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: { msg: "O nome do paciente deve ser preenchido" },
+            len: { args: [5, 999999999], msg: "O nome do cluente deve possuir pelo menos 5 caracteres" }
+        }
+    },
+    dataNascimento: {
+        type: DataTypes.DATE,
+        validate: {
+            isDate: true
+        }
+    }
+}, {
+    sequelize,
+    modelName: "paciente",
+    tableName: "pacientes"
+});

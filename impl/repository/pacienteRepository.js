@@ -1,12 +1,9 @@
-import { pacientes } from "../data/pacientes.js";
-
+import { insert } from "../data/pacientes.js" 
 
 export default class PacienteRepository {
-    pacientesList = pacientes; // Instância da lista de pacientes importada
-
     // Função para salvar um paciente na lista de pacientes
     save(paciente) {
-        pacientes.push(paciente); // Usa a função push() da lista para adicionar o paciente
+        insert(paciente); // Usa a função insert() da lista para adicionar o paciente
         return true;
     }
 

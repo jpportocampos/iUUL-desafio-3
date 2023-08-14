@@ -1,5 +1,5 @@
 import PromptSync from 'prompt-sync';
-import { Sequelize } from "sequelize";
+import { sequelize } from './utils/database.js';
 import PacienteController from './controller/pacienteController.js';
 import ConsultaController from './controller/consultaController.js';
 
@@ -7,8 +7,6 @@ const prompt = PromptSync({ sigint: true }); // Criação do leitor de entradas 
 
 const pacienteController = new PacienteController(); // Criação da instância do Controller de Paciente
 const consultaController = new ConsultaController(); // Criação da instância do Controller de Consulta
-
-const sequelize = new Sequelize('postgres://postgres:pass123@localhost:5432/consultorio');
 
 try {
     await sequelize.authenticate();
