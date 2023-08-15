@@ -2,6 +2,8 @@ import PromptSync from 'prompt-sync';
 import { sequelize } from './utils/database.js';
 import PacienteController from './controller/pacienteController.js';
 import ConsultaController from './controller/consultaController.js';
+import Pacientes from './data/pacientes.js';
+import Consultas from './data/consultas.js';
 
 const prompt = PromptSync({ sigint: true }); // Criação do leitor de entradas do console
 
@@ -15,10 +17,13 @@ try {
     console.error('Unable to connect to the database:', error);
   }
 
-menuPrincipal(); // Chamada da função que inicia o Menu Principal
+Pacientes.init(sequelize);
+Consultas.init(sequelize);
+
+await menuPrincipal(); // Chamada da função que inicia o Menu Principal
 
 // Função que inicia o Menu Principal
-function menuPrincipal() {
+async function menuPrincipal() {
     // Bloco que imprime no console as opções do Menu Principal
     for (;;) {
         console.log("Menu Principal: ");
@@ -32,10 +37,10 @@ function menuPrincipal() {
         // Validações de entrada
         if (selecaoPrincipal === "1") {
             console.log(" ");
-            menuCadastro(); // Chamada da função que inicia o Menu de Cadastro
+            await menuCadastro(); // Chamada da função que inicia o Menu de Cadastro
         } else if (selecaoPrincipal === "2") {
             console.log(" ");
-            menuAgenda() // Chamada da função que inicia o Menu de Agenda
+            await menuAgenda(); // Chamada da função que inicia o Menu de Agenda
         } else if (selecaoPrincipal === "3") {
             break; // Finaliza a aplicação
         } else {
@@ -48,7 +53,7 @@ function menuPrincipal() {
 }
 
 // Função que inicia o Menu de Cadastro
-function menuCadastro() {
+async function menuCadastro() {
     // Bloco que imprime no console as opções do Menu de Cadastro
     for (;;) {
         console.log("Menu do Cadastro de Pacientes: ");
@@ -64,19 +69,19 @@ function menuCadastro() {
         // Validações de entrada
         if (selecaoCadastro === "1") {
             console.log(" ");
-            cadastroPaciente(); // Chamada da função que inicia o cadastro de um paciente
+            await cadastroPaciente(); // Chamada da função que inicia o cadastro de um paciente
         } else if (selecaoCadastro === "2") {
             console.log(" ");
-            excluiPaciente(); // Chamada da função que inicia a exclusão de um paciente
+            await excluiPaciente(); // Chamada da função que inicia a exclusão de um paciente
         } else if (selecaoCadastro === "3") {
             console.log(" ");
-            listarPacienteCpf(); // Chamada da função que inicia a listagem de pacientes ordenados por cpf
+            await listarPacienteCpf(); // Chamada da função que inicia a listagem de pacientes ordenados por cpf
         } else if (selecaoCadastro === "4") {
             console.log(" ");
-            listarPacienteNome(); // Chamada da função que inicia a listagem de pacientes ordenados por nome
+            await listarPacienteNome(); // Chamada da função que inicia a listagem de pacientes ordenados por nome
         } else if (selecaoCadastro === "5") {
             console.log(" ");
-            menuPrincipal(); // Chamada da função que retorna para o Menu Principal
+            await menuPrincipal(); // Chamada da função que retorna para o Menu Principal
         } else {
             // Caso a entrada seja inválida, imprime a mensagem e chama a função do Menu de Cadastro novamente
             console.log(" ");
@@ -87,7 +92,7 @@ function menuCadastro() {
 }
 
 // Função que inicia o Menu de Agenda
-function menuAgenda() {
+async function menuAgenda() {
     // Bloco que imprime no console as opções do Menu de Agenda
     console.log("Agenda: ");
     console.log("1-Agendar consulta ");
@@ -101,27 +106,27 @@ function menuAgenda() {
     // Validações de entrada
     if (selecaoAgenda === "1") {
         console.log(" ");
-        agendaConsulta(); // Chamada da função que inicia o cadastro de uma consulta
+        await agendaConsulta(); // Chamada da função que inicia o cadastro de uma consulta
     } else if (selecaoAgenda === "2") {
         console.log(" ");
-        cancelaConsulta(); // Chamada da função que inicia o cancelamento de uma consulta
+        await cancelaConsulta(); // Chamada da função que inicia o cancelamento de uma consulta
     } else if (selecaoAgenda === "3") {
         console.log(" ");
-        listarAgenda(); // Chamada da função que inicia a listagem da agenda
+        await listarAgenda(); // Chamada da função que inicia a listagem da agenda
     } else if (selecaoAgenda === "4") {
         console.log(" ");
-        menuPrincipal(); // Chamada da função que retorna para o Menu Principal
+        await menuPrincipal(); // Chamada da função que retorna para o Menu Principal
     } else {
         // Caso a entrada seja inválida, imprime a mensagem e chama a função do Menu de Cadastro novamente
         console.log(" ");
         console.log("Selecione uma opção válida do menu: ");
         console.log(" ");
-        menuAgenda();
+        await menuAgenda();
     }
 }
 
 // Função que inicia o cadastro de um paciente
-function cadastroPaciente() {
+async function cadastroPaciente() {
     // Inicialização das variáveis através de entradas no console
     let cpf = prompt("CPF: ");
     let nome = prompt("Nome: ");
@@ -130,44 +135,44 @@ function cadastroPaciente() {
 
     // Bloco try catch para garantir que a aplicação não finalize depois de gerar uma exceção
     try {
-        if (pacienteController.save(cpf, nome, dataNascimento)) { // Chamada da função do Controller de paciente para salvar um paciente
+        if (await pacienteController.save(cpf, nome, dataNascimento)) { // Chamada da função do Controller de paciente para salvar um paciente
             console.log("Paciente cadastrado com sucesso!"); // Imprime a mensagem de sucesso
             console.log(" ");
-            menuCadastro(); // Chamada do Menu de Cadastro novamente ao final do processo de cadastro
+            await menuCadastro(); // Chamada do Menu de Cadastro novamente ao final do processo de cadastro
         }
     }
     catch (err) { // Caso uma exceção seja lançada, coleta a mensagem
         console.log(err); // Imprime a mensagem da exceção
         console.log(" ");
-        cadastroPaciente(); // Chama novamente a função de cadastro de paciente para uma nova tentativa
+        await cadastroPaciente(); // Chama novamente a função de cadastro de paciente para uma nova tentativa
     }
 }
 
 // Função que inicia a exclusão de um paciente
-function excluiPaciente() {
+async function excluiPaciente() {
     // Inicialização das variáveis através de entradas no console
     let cpf = prompt("CPF: ");
     console.log(" ");
 
     // Bloco try catch para garantir que a aplicação não finalize depois de gerar uma exceção
     try {
-        if (pacienteController.delete(cpf)) { // Chamada da função do Controller de paciente para deletar um paciente
+        if (await pacienteController.delete(cpf)) { // Chamada da função do Controller de paciente para deletar um paciente
             console.log("Paciente excluído com sucesso!"); // Imprime a mensagem de sucesso
             console.log(" ");
-            menuCadastro(); // Chamada do Menu de Cadastro novamente ao final do processo de exclusão
+            await menuCadastro(); // Chamada do Menu de Cadastro novamente ao final do processo de exclusão
         }
     }
     catch (err) { // Caso uma exceção seja lançada, coleta a mensagem
         console.log(err); // Imprime a mensagem da exceção
         console.log(" ");
-        excluiPaciente(); // Chama novamente a função de exclusão de paciente para uma nova tentativa
+        await excluiPaciente(); // Chama novamente a função de exclusão de paciente para uma nova tentativa
     }
 }
 
 // Função que inicia a listagem de pacientes ordenados por cpf
-function listarPacienteCpf() {
+async function listarPacienteCpf() {
     // Coleta a lista de pacientes em uma variável através da função de listar por CPF do Controller de paciente
-    let pacientes = pacienteController.listarCpf();
+    let pacientes = await pacienteController.listarCpf();
 
     // Bloco que imprime o layout de listagem
     console.log("------------------------------------------------------------");
@@ -182,13 +187,13 @@ function listarPacienteCpf() {
     });
     console.log("------------------------------------------------------------");
     console.log(" ");
-    menuCadastro(); // Chamada do Menu de Cadastro novamente ao final do processo de listagem
+    await menuCadastro(); // Chamada do Menu de Cadastro novamente ao final do processo de listagem
 }
 
 // Função que inicia a listagem de pacientes ordenados por nome
-function listarPacienteNome() {
+async function listarPacienteNome() {
     // Coleta a lista de pacientes em uma variável através da função de listar por Nome do Controller de paciente
-    let pacientes = pacienteController.listarNome();
+    let pacientes = await pacienteController.listarNome();
 
     // Bloco que imprime o layout de listagem
     console.log("------------------------------------------------------------");
@@ -203,11 +208,11 @@ function listarPacienteNome() {
     });
     console.log("------------------------------------------------------------");
     console.log(" ");
-    menuCadastro(); // Chamada do Menu de Cadastro novamente ao final do processo de listagem
+    await menuCadastro(); // Chamada do Menu de Cadastro novamente ao final do processo de listagem
 }
 
 // Função que inicia o agendamento de uma consulta
-function agendaConsulta() {
+async function agendaConsulta() {
     // Inicialização das variáveis através de entradas no console
     let cpf = prompt("CPF: ");
     let data = prompt("Data da consulta: ");
@@ -219,18 +224,18 @@ function agendaConsulta() {
         if (consultaController.save(cpf, data, horaInicial, horaFinal)) { // Chamada da função do Controller de consulta para salvar uma consulta
             console.log("Agendamento realizado com sucesso!"); // Imprime a mensagem de sucesso
             console.log(" ");
-            menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de cadastro
+            await menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de cadastro
         }
     }
     catch (err) { // Caso uma exceção seja lançada, coleta a mensagem
         console.log(err); // Imprime a mensagem da exceção
         console.log(" ");
-        agendaConsulta(); // Chama novamente a função de agendar uma consulta para uma nova tentativa
+        await agendaConsulta(); // Chama novamente a função de agendar uma consulta para uma nova tentativa
     }
 }
 
 // Função que inicia o cancelamento de uma consulta
-function cancelaConsulta() {
+async function cancelaConsulta() {
     // Inicialização das variáveis através de entradas no console
     let cpf = prompt("CPF: ");
     let data = prompt("Data da consulta: ");
@@ -241,39 +246,39 @@ function cancelaConsulta() {
         if (consultaController.delete(cpf, data, horaInicial)) { // Chamada da função do Controller de consulta para excluir uma consulta
             console.log("Agendamento cancelado com sucesso!"); // Imprime a mensagem de sucesso
             console.log(" ");
-            menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de cancelamento
+            await menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de cancelamento
         }
     }
     catch (err) { // Caso uma exceção seja lançada, coleta a mensagem
         console.log(err); // Imprime a mensagem da exceção
         console.log(" ");
-        cancelaConsulta(); // Chama novamente a função de cancelar uma consulta para uma nova tentativa
+        await cancelaConsulta(); // Chama novamente a função de cancelar uma consulta para uma nova tentativa
     }
 }
 
 // Função que inicia a listagem da agenda
-function listarAgenda() {
+async function listarAgenda() {
     // Inicialização das variáveis através de entradas no console
     let tipoLista = prompt("Apresentar a agenda T-Toda ou P-Periodo: ");
 
     // Validações de entrada
     if (tipoLista === "T") {
         console.log(" ");
-        listarAgendaT(); // Chamada da função que inicia a listagem total da agenda
+        await listarAgendaT(); // Chamada da função que inicia a listagem total da agenda
     } else if (tipoLista === "P") {
         console.log(" ");
-        listarAgendaP(); // Chamada da funçaõ que inicia a listagem parcial da agenda
+        await listarAgendaP(); // Chamada da funçaõ que inicia a listagem parcial da agenda
     } else {
         // Caso a entrada seja inválida, imprime a mensagem e chama a função de lsitar agenda novamente
         console.log(" ");
         console.log("Selecione uma opção válida do menu: ");
         console.log(" ");
-        listarAgenda();
+        await listarAgenda();
     }
 }
 
 // Função que inicia o processo e listar a agenda total
-function listarAgendaT() {
+async function listarAgendaT() {
     // Coleta a lista de consultas em uma variável através da função de listar agenda toda do Controller de consulta
     let consultas = consultaController.listarAgendaToda();
 
@@ -286,10 +291,10 @@ function listarAgendaT() {
     });
     console.log("------------------------------------------------------------");
     console.log(" ");
-    menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de listagem
+    await menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de listagem
 }
 
-function listarAgendaP() {
+async function listarAgendaP() {
     // Inicialização das variáveis através de entradas no console
     let dataIni = prompt("Data inicial: ");
     let dataFin = prompt("Data final: ");
@@ -306,5 +311,5 @@ function listarAgendaP() {
     });
     console.log("------------------------------------------------------------");
     console.log(" ");
-    menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de listagem
+    await menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de listagem
 }

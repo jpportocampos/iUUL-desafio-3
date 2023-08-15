@@ -14,19 +14,19 @@ export default class PacienteService {
     #consultaRepository = new ConsultaRepository(); // Criação da instância do Repository de Consulta
 
     // Função para salvar os daddos de um paciente
-    salvar(cpf, nome, dataNascimento) {
-        this.#validaCpf(cpf); // Chamada da função que valida o cpf do paciente
+    async salvar(cpf, nome, dataNascimento) {
+        await this.#validaCpf(cpf); // Chamada da função que valida o cpf do paciente
         this.#validaNome(nome); // Chamada da função que valida o nome do paciente
         this.#validaDataNascimento(dataNascimento); // Chamada da função que valida a data de nascimento do paciente
 
         // Gera um novo paciente a partir dos dados após as validações
         let paciente = new Paciente(cpf, nome, dataNascimento);
 
-        return this.#pacienteRepository.save(paciente); // Chamada da função de salvar o paciente no Repository de Paciente, retorna true caso dê certo e false caso dê erro
+        return await this.#pacienteRepository.save(paciente); // Chamada da função de salvar o paciente no Repository de Paciente, retorna true caso dê certo e false caso dê erro
     }
 
     // Função para deletar os dados de um paciente
-    deletar(cpf) {
+    async deletar(cpf) {
         if (this.#validaCadastro(cpf)) { // Valida se o cliente realmente está cadastrado
             throw new UserException("Paciente não cadastrado") // Gera uma exceção caso o paciente não eteja cadastrado
         }
@@ -57,13 +57,13 @@ export default class PacienteService {
         }
 
         // Chamada da função para deletar o paciente no Repository de Paciente
-        return this.#pacienteRepository.delete(cpf);
+        return await this.#pacienteRepository.delete(cpf);
     }
 
     // Função para listar os dados dos pacientes ordenados por CPF
-    listarCpf() {
+    async listarCpf() {
         // Coleta no repository de paciente a lista de pacientes ordenada por CPF
-        let listCpf = this.#pacienteRepository.getAllCpf();
+        let listCpf = await this.#pacienteRepository.getAllCpf();
 
         // Chama a função para verificar se há consultas atreladadas a algum paciente e atualiza a lista
         listCpf = this.#getConsulta(listCpf);
@@ -78,9 +78,9 @@ export default class PacienteService {
     }
 
     // Função para listar os dados dos pacientes ordenados por nome
-    listarNome() {
+    async listarNome() {
         // Coleta no repository de paciente a lista de pacientes ordenada por nome
-        let listNome = this.#pacienteRepository.getAllNome();
+        let listNome = await this.#pacienteRepository.getAllNome();
 
         // Chama a função para verificar se há consultas atreladadas a algum paciente e atualiza a lista
         listNome = this.#getConsulta(listNome);
@@ -95,8 +95,8 @@ export default class PacienteService {
     }
 
     // Função que faz a validação do CPF do paciente
-    #validaCpf(cpf) {
-        if (!this.#validaCadastro(cpf)) { // Verifica se o paciente já está cadastrado
+    async #validaCpf(cpf) {
+        if (!await this.#validaCadastro(cpf)) { // Verifica se o paciente já está cadastrado
             throw new UserException("Erro: CPF já cadastrado"); // Gera uma exceção caso o paciente já esteja cadastrado
         }
         // Verifica se o CPF possui a quantidade correta de dígitos
@@ -136,8 +136,8 @@ export default class PacienteService {
     }
 
     // Função que faz a validação do cadastro de um paciente
-    #validaCadastro(cpf) {
-        if (this.#pacienteRepository.findByCpf(cpf) === "N/A") { // Recupera o paciente usando o CPF no Repository de paciente e verifica se retornou "N/A"
+    async #validaCadastro(cpf) {
+        if (await this.#pacienteRepository.findByCpf(cpf) === "N/A") { // Recupera o paciente usando o CPF no Repository de paciente e verifica se retornou "N/A"
             return true; // Caso sim, retorna ture, o cpf não é cadastrado
         }
 

@@ -1,5 +1,22 @@
-import Paciente from "../entity/paciente.js";
+import { DataTypes, Model } from "sequelize";
 
-export async function insert(paciente) {
-    await Paciente.create({ cpf: paciente.cpf, nome: paciente.nome, dataNascimento: paciente.dataNascimento });
+export default class Pacientes extends Model {
+    static init(sequelize) {
+        super.init({
+            cpf: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            },
+            nome: {
+                type: DataTypes.STRING
+            },
+            dataNascimento: {
+                type: DataTypes.STRING
+            }
+        }, {
+            sequelize,
+            modelName: "paciente",
+            tableName: "pacientes"
+        });
+    }
 }

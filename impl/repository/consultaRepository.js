@@ -1,7 +1,7 @@
-import { consultas } from "../data/consultas.js";
+//import { consultas } from "../data/consultas.js";
 
 export default class ConsultaRepository {
-    consultasList = consultas; // Instância da lista de consultas importada
+//    consultasList = consultas; // Instância da lista de consultas importada
     
     // Função para salvar uma consulta na lista de consultas
     save(consulta) {
