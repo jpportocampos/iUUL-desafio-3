@@ -14,51 +14,51 @@ export default class ConsultaService {
     #pacienteRepository = new PacienteRepository(); // Criação da instância do Repository de Paciente
     
     // Função para salvar os daddos de uma consulta
-    salvar(cpf, data, horaInicial, horaFinal) {
-        let paciente = this.#pacienteRepository.findByCpf(cpf); // Recupera o paciente utilizando o cpf com uma função de busca por CPF do repository de paciente
+    async salvar(cpf, data, horaInicial, horaFinal) {
+        let paciente = await this.#pacienteRepository.findByCpf(cpf); // Recupera o paciente utilizando o cpf com uma função de busca por CPF do repository de paciente
         if (paciente === "N/A") { // Verifica se o paciente está cadastrado
             throw new UserException("Erro: paciente não cadastrado"); // Caso não esteja, gera uma exceção
         }
 
-        this.#validaData(data, horaInicial, paciente); // Chamada da função que valida a data da consulta
+        await this.#validaData(data, horaInicial, paciente); // Chamada da função que valida a data da consulta
         this.#validaHorario(horaInicial); // Chamada da função que valida o horário inicial da função
         this.#validaHorario(horaFinal); // Chamada da função que valida o horário final da consulta
 
         // Gera uma nova consulta a partir dos dados após as validações
         let consulta = new Consulta(cpf, data, horaInicial, horaFinal);
 
-        return this.#consultaRepository.save(consulta); // Chamada da função de salvar a cosnulta no Repository de Consulta, retorna true caso dê certo e false caso dê erro
+        return await this.#consultaRepository.save(consulta); // Chamada da função de salvar a cosnulta no Repository de Consulta, retorna true caso dê certo e false caso dê erro
     }
 
     // Função para deletar os dados de uma consulta
-    deletar(cpf, data, horaInicial) {
-        if (this.#pacienteRepository.findByCpf(cpf) === "N/A") { // Verifica se o paciente está cadastrado através da função de busca por CPf do repository de paciente
+    async deletar(cpf, data, horaInicial) {
+        if (await this.#pacienteRepository.findByCpf(cpf) === "N/A") { // Verifica se o paciente está cadastrado através da função de busca por CPf do repository de paciente
             throw new UserException("Erro: paciente não cadastrado"); // Gera uma exceção caso o paciente não esteja cadastrado
         }
 
         // Chamada da função para deletar a consulta no Repository de Consulta
-        return this.#consultaRepository.delete(cpf, data, horaInicial);
+        return await this.#consultaRepository.delete(cpf, data, horaInicial);
     }
 
     // Função para listar a agenda toda
-    listarAgendaToda() {
-        let list = this.#consultaRepository.getAll(); // Recebe a lista de todas as consultas através de uma função do repository de consulta
+    async listarAgendaToda() {
+        let list = await this.#consultaRepository.getAll(); // Recebe a lista de todas as consultas através de uma função do repository de consulta
 
        // Percorre a lista recebida para adicionar os dados extras necessários 
-        list.forEach(n => {
+        await list.forEach(async n => {
             n.tempo = this.#calculaTempo(n.horaInicial, n.horaFinal); // Chamada da função para calcular o tempo total de uma consulta
             n.horaInicialConsulta = DateTime.fromFormat(n.horaInicial, "HHmm").toFormat("HH:mm"); // Formata a hora inicial da consulta
             n.horaFinalConsulta = DateTime.fromFormat(n.horaFinal, "HHmm").toFormat("HH:mm"); // Formata a hora final da consulta
-            n.nome = this.#pacienteRepository.findByCpf(n.cpfPaciente).nome; // Recupera o nome do paciente através do cpf usando uma função do repository de paciente
-            n.dataNascimento = this.#pacienteRepository.findByCpf(n.cpfPaciente).dataNascimento; // Recupera a data de nascimento do paciente através do cpf usando uma função do repository de paciente
+            n.nome = await this.#pacienteRepository.findByCpf(n.cpfPaciente).nome; // Recupera o nome do paciente através do cpf usando uma função do repository de paciente
+            n.dataNascimento = await this.#pacienteRepository.findByCpf(n.cpfPaciente).dataNascimento; // Recupera a data de nascimento do paciente através do cpf usando uma função do repository de paciente
         });
 
         return list; // Retorna a lista atualizada
     }
 
     // Função para listar a agenda em um determinado período
-    listarAgendaParcial(dataIni, dataFin) {
-        let list = this.#consultaRepository.getAll(); // Recebe a lista de todas as consultas através de uma função do repository de consulta
+    async listarAgendaParcial(dataIni, dataFin) {
+        let list = await this.#consultaRepository.getAll(); // Recebe a lista de todas as consultas através de uma função do repository de consulta
         
         // Transforma as datas inicial e final do período definido em DateTime
         let dataInicial = DateTime.fromFormat(dataIni.toString(), "dd/LL/yyyy");
@@ -73,8 +73,8 @@ export default class ConsultaService {
                 list[index].tempo = this.#calculaTempo(list[index].horaInicial, list[index].horaFinal);  // Chamada da função para calcular o tempo total de uma consulta
                 list[index].horaInicialConsulta = DateTime.fromFormat(list[index].horaInicial, "HHmm").toFormat("HH:mm"); // Formata a hora inicial da consulta
                 list[index].horaFinalConsulta = DateTime.fromFormat(list[index].horaFinal, "HHmm").toFormat("HH:mm"); // Formata a hora final da consulta
-                list[index].nome = this.#pacienteRepository.findByCpf(list[index].cpfPaciente).nome; // Recupera o nome do paciente através do cpf usando uma função do repository de paciente
-                list[index].dataNascimento = this.#pacienteRepository.findByCpf(list[index].cpfPaciente).dataNascimento; // Recupera a data de nascimento do paciente através do cpf usando uma função do repository de paciente
+                list[index].nome = await this.#pacienteRepository.findByCpf(list[index].cpfPaciente).nome; // Recupera o nome do paciente através do cpf usando uma função do repository de paciente
+                list[index].dataNascimento = await this.#pacienteRepository.findByCpf(list[index].cpfPaciente).dataNascimento; // Recupera a data de nascimento do paciente através do cpf usando uma função do repository de paciente
             }
         }
 
@@ -82,7 +82,7 @@ export default class ConsultaService {
     }
 
     // Função para validar a data de uma consulta
-    #validaData(data, horaInicial, paciente) {
+    async #validaData(data, horaInicial, paciente) {
         if (data[2] !== "/" || data[5] !== "/" || data.length !== 10) { // Verifica a formatação da data
             throw new UserException("Erro: a data precisa estar no formato dd/mm/yyyy"); // Gera uma exceção caso a formatação esteja errada
         }
@@ -97,26 +97,23 @@ export default class ConsultaService {
         let dataConsulta = DateTime.fromFormat(dataCompleta, "dd/LL/yyyy HHmm");
         let dataAtual = DateTime.now();
 
-        // Percorre a lista de consultas para ver se já não existe alguma consulta para este paciente
-        for (let index = 0; index < this.#consultaRepository.consultasList.length; index++) {
-            let consulta = this.#consultaRepository.findByCpf(paciente.cpf); // Recupera a consulta usando o cpf do paciente
-            if (consulta !== "N/A") { // Verifica se o a consulta existe
-                // Transforma a consulta recuperada em DateTime
-                let dataPaciente = consulta.data + " " + consulta.horaInicial;
-                let dataConsultaPaciente = DateTime.fromFormat(dataPaciente, "dd/LL/yyyy HHmm");
+        let consultas = await this.#consultaRepository.findAllByCpf(paciente.cpf)
 
-                // Verifica se a consulta é futura
-                if (dataConsultaPaciente > dataAtual) {
-                    throw new UserException("Erro: o paciente já tem uma consulta futura agendada"); // Caso seja, gera uma exceção
-                }
-            } else {
-                break; // Caso o paciente não tenha consultas, quebra o loop
+        // Percorre a lista de consultas para ver se já não existe alguma consulta para este paciene
+        for (let index = 0; index < consultas; index++) {
+            // Transforma a consulta recuperada em DateTime
+            let dataPaciente = consultas[index].data + " " + consultas[index].horaInicial;
+            let dataConsultaPaciente = DateTime.fromFormat(dataPaciente, "dd/LL/yyyy HHmm");
+
+            // Verifica se a consulta é futura
+            if (dataConsultaPaciente > dataAtual) {
+                throw new UserException("Erro: o paciente já tem uma consulta futura agendada"); // Caso seja, gera uma exceção
             }
         }
 
         // Verifica se a data da consulta é futura
         if (dataConsulta > dataAtual) {
-            if (this.#consultaRepository.findByData(data, horaInicial) !== "N/A") { // Verifica se já existe uma consulta neste horário recuperando consulta por data no repository de consulta
+            if (await this.#consultaRepository.findByData(data, horaInicial) !== "N/A") { // Verifica se já existe uma consulta neste horário recuperando consulta por data no repository de consulta
                 throw new UserException("Erro: já existe uma consulta agendada nesse horário"); // Caso já exista, gera uma exceção
             }
             return true; // Retorna true caso esteja tudo certo

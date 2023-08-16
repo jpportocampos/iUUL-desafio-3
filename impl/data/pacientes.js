@@ -4,7 +4,7 @@ export default class Pacientes extends Model {
     static init(sequelize) {
         super.init({
             cpf: {
-                type: DataTypes.INTEGER,
+                type: DataTypes.STRING,
                 allowNull: false
             },
             nome: {

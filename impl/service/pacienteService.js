@@ -27,23 +27,16 @@ export default class PacienteService {
 
     // Função para deletar os dados de um paciente
     async deletar(cpf) {
-        if (this.#validaCadastro(cpf)) { // Valida se o cliente realmente está cadastrado
+        if (await this.#validaCadastro(cpf)) { // Valida se o cliente realmente está cadastrado
             throw new UserException("Paciente não cadastrado") // Gera uma exceção caso o paciente não eteja cadastrado
         }
 
+        let consultas = await this.#consultaRepository.findAllByCpf(cpf)
+
         // Percorre a lista de consultas para verificar a existência de consultas deste paciente
-        for (let index = 0; index < this.#consultaRepository.consultasList.length; index++) {
-            // Coleta a primeira consulta disponível
-            let consulta = this.#consultaRepository.findByCpf(cpf);
-
-            // Caso a coleta traga "N/A" significa que não existem consultas atreladas a este paciente
-            // O loop é quebrado
-            if (consulta === "N/A") {
-                break;
-            }
-
+        for (let index = 0; index < consultas; index++) {
             // Bloco para manipular os dados da consulta coletada para transforma-los em DateTime
-            let dataCompleta = consulta.data + " " + consulta.horaInicial;
+            let dataCompleta = consultas[index].data + " " + consultas[index].horaInicial;
             let dataConsulta = DateTime.fromFormat(dataCompleta, "dd/LL/yyyy HHmm");
             let dataAtual = DateTime.now();
 
@@ -53,7 +46,7 @@ export default class PacienteService {
             }
 
             // Chamada da função para deletar a consulta no Repository de Consulta
-            this.#consultaRepository.delete(cpf, consulta.data, consulta.horaInicial);
+            await this.#consultaRepository.delete(cpf, consultas[index].data, consultas[index].horaInicial);
         }
 
         // Chamada da função para deletar o paciente no Repository de Paciente
@@ -66,7 +59,7 @@ export default class PacienteService {
         let listCpf = await this.#pacienteRepository.getAllCpf();
 
         // Chama a função para verificar se há consultas atreladadas a algum paciente e atualiza a lista
-        listCpf = this.#getConsulta(listCpf);
+        listCpf = await this.#getConsulta(listCpf);
 
         // Percorre a lista para gerar a idade dos pacientes
         listCpf.forEach(n => {
@@ -83,7 +76,7 @@ export default class PacienteService {
         let listNome = await this.#pacienteRepository.getAllNome();
 
         // Chama a função para verificar se há consultas atreladadas a algum paciente e atualiza a lista
-        listNome = this.#getConsulta(listNome);
+        listNome = await this.#getConsulta(listNome);
 
         // Percorre a lista para gerar a idade dos pacientes
         listNome.forEach(n => {
@@ -248,10 +241,10 @@ export default class PacienteService {
     }
 
     // Função para verificar se há consultas atreladadas a algum paciente 
-    #getConsulta(list) {
+    async #getConsulta(list) {
         // Percorre a lista de pacientes recebida
         for (let index = 0; index < list.length; index++) {
-            let consulta = this.#consultaRepository.findByCpf(list[index].cpf); // Recebe a consulta através do CPF usando uma função do Repository de consulta
+            let consulta = await this.#consultaRepository.findByCpf(list[index].cpf); // Recebe a consulta através do CPF usando uma função do Repository de consulta
             if (consulta !== "N/A") { // Verifica se a consulta existe
                 // Caso sim, formata os dados e os adiciona no objeto da lista
                 list[index].dataConsulta = "Agendado para: " + consulta.data;

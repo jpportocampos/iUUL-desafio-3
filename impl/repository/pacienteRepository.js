@@ -9,11 +9,16 @@ export default class PacienteRepository {
 
     // Função para deletar um paciente da lista de pacientes
     async delete(cpfPaciente) {
-        await Pacientes.destroy({
-            where: {
-              cpf: cpfPaciente
-            }
-          });
+        try {
+            await Pacientes.destroy({
+                where: {
+                  cpf: cpfPaciente
+                }
+              });
+            return true;            
+        } catch (error) {
+            return false;
+        }
     }
 
     // Função para buscar um paciente através do CPF
@@ -25,7 +30,11 @@ export default class PacienteRepository {
                 }
               });
 
-              return paciente[0];
+              if (paciente.length === 0) {
+                return "N/A";
+              } else {
+                return paciente[0];
+              }
         } catch (error) {
             return "N/A"   
         }

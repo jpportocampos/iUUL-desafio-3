@@ -17,8 +17,10 @@ try {
     console.error('Unable to connect to the database:', error);
   }
 
-Pacientes.init(sequelize);
-Consultas.init(sequelize);
+await Pacientes.init(sequelize);
+await Consultas.init(sequelize);
+
+await sequelize.sync();
 
 await menuPrincipal(); // Chamada da função que inicia o Menu Principal
 
@@ -93,7 +95,8 @@ async function menuCadastro() {
 
 // Função que inicia o Menu de Agenda
 async function menuAgenda() {
-    // Bloco que imprime no console as opções do Menu de Agenda
+    for(;;) {
+        // Bloco que imprime no console as opções do Menu de Agenda
     console.log("Agenda: ");
     console.log("1-Agendar consulta ");
     console.log("2-Cancelar agendamento ");
@@ -121,51 +124,53 @@ async function menuAgenda() {
         console.log(" ");
         console.log("Selecione uma opção válida do menu: ");
         console.log(" ");
-        await menuAgenda();
+    }
     }
 }
 
 // Função que inicia o cadastro de um paciente
 async function cadastroPaciente() {
-    // Inicialização das variáveis através de entradas no console
-    let cpf = prompt("CPF: ");
-    let nome = prompt("Nome: ");
-    let dataNascimento = prompt("Data de nascimento: ");
-    console.log(" ");
-
-    // Bloco try catch para garantir que a aplicação não finalize depois de gerar uma exceção
-    try {
-        if (await pacienteController.save(cpf, nome, dataNascimento)) { // Chamada da função do Controller de paciente para salvar um paciente
-            console.log("Paciente cadastrado com sucesso!"); // Imprime a mensagem de sucesso
-            console.log(" ");
-            await menuCadastro(); // Chamada do Menu de Cadastro novamente ao final do processo de cadastro
-        }
-    }
-    catch (err) { // Caso uma exceção seja lançada, coleta a mensagem
-        console.log(err); // Imprime a mensagem da exceção
+    for(;;) {
+        // Inicialização das variáveis através de entradas no console
+        let cpf = prompt("CPF: ");
+        let nome = prompt("Nome: ");
+        let dataNascimento = prompt("Data de nascimento: ");
         console.log(" ");
-        await cadastroPaciente(); // Chama novamente a função de cadastro de paciente para uma nova tentativa
+
+        // Bloco try catch para garantir que a aplicação não finalize depois de gerar uma exceção
+        try {
+            if (await pacienteController.save(cpf, nome, dataNascimento)) { // Chamada da função do Controller de paciente para salvar um paciente
+                console.log("Paciente cadastrado com sucesso!"); // Imprime a mensagem de sucesso
+                console.log(" ");
+                await menuCadastro(); // Chamada do Menu de Cadastro novamente ao final do processo de cadastro
+            }
+        }
+        catch (err) { // Caso uma exceção seja lançada, coleta a mensagem
+            console.log(err); // Imprime a mensagem da exceção
+            console.log(" ");
+        }
     }
 }
 
 // Função que inicia a exclusão de um paciente
 async function excluiPaciente() {
-    // Inicialização das variáveis através de entradas no console
-    let cpf = prompt("CPF: ");
-    console.log(" ");
-
-    // Bloco try catch para garantir que a aplicação não finalize depois de gerar uma exceção
-    try {
-        if (await pacienteController.delete(cpf)) { // Chamada da função do Controller de paciente para deletar um paciente
-            console.log("Paciente excluído com sucesso!"); // Imprime a mensagem de sucesso
-            console.log(" ");
-            await menuCadastro(); // Chamada do Menu de Cadastro novamente ao final do processo de exclusão
-        }
-    }
-    catch (err) { // Caso uma exceção seja lançada, coleta a mensagem
-        console.log(err); // Imprime a mensagem da exceção
+    for(;;) {
+        // Inicialização das variáveis através de entradas no console
+        let cpf = prompt("CPF: ");
         console.log(" ");
-        await excluiPaciente(); // Chama novamente a função de exclusão de paciente para uma nova tentativa
+    
+        // Bloco try catch para garantir que a aplicação não finalize depois de gerar uma exceção
+        try {
+            if (await pacienteController.delete(cpf)) { // Chamada da função do Controller de paciente para deletar um paciente
+                console.log("Paciente excluído com sucesso!"); // Imprime a mensagem de sucesso
+                console.log(" ");
+                await menuCadastro(); // Chamada do Menu de Cadastro novamente ao final do processo de exclusão
+            }
+        }
+        catch (err) { // Caso uma exceção seja lançada, coleta a mensagem
+            console.log(err); // Imprime a mensagem da exceção
+            console.log(" ");
+        }
     }
 }
 
@@ -213,74 +218,77 @@ async function listarPacienteNome() {
 
 // Função que inicia o agendamento de uma consulta
 async function agendaConsulta() {
-    // Inicialização das variáveis através de entradas no console
-    let cpf = prompt("CPF: ");
-    let data = prompt("Data da consulta: ");
-    let horaInicial = prompt("Hora inicial: ");
-    let horaFinal = prompt("Hora final: ");
-
-    // Bloco try catch para garantir que a aplicação não finalize depois de gerar uma exceção
-    try {
-        if (consultaController.save(cpf, data, horaInicial, horaFinal)) { // Chamada da função do Controller de consulta para salvar uma consulta
-            console.log("Agendamento realizado com sucesso!"); // Imprime a mensagem de sucesso
-            console.log(" ");
-            await menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de cadastro
+    for(;;) {
+        // Inicialização das variáveis através de entradas no console
+        let cpf = prompt("CPF: ");
+        let data = prompt("Data da consulta: ");
+        let horaInicial = prompt("Hora inicial: ");
+        let horaFinal = prompt("Hora final: ");
+    
+        // Bloco try catch para garantir que a aplicação não finalize depois de gerar uma exceção
+        try {
+            if (await consultaController.save(cpf, data, horaInicial, horaFinal)) { // Chamada da função do Controller de consulta para salvar uma consulta
+                console.log("Agendamento realizado com sucesso!"); // Imprime a mensagem de sucesso
+                console.log(" ");
+                await menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de cadastro
+            }
         }
-    }
-    catch (err) { // Caso uma exceção seja lançada, coleta a mensagem
-        console.log(err); // Imprime a mensagem da exceção
-        console.log(" ");
-        await agendaConsulta(); // Chama novamente a função de agendar uma consulta para uma nova tentativa
+        catch (err) { // Caso uma exceção seja lançada, coleta a mensagem
+            console.log(err); // Imprime a mensagem da exceção
+            console.log(" ");
+        }
     }
 }
 
 // Função que inicia o cancelamento de uma consulta
 async function cancelaConsulta() {
-    // Inicialização das variáveis através de entradas no console
-    let cpf = prompt("CPF: ");
-    let data = prompt("Data da consulta: ");
-    let horaInicial = prompt("Hora inicial: ");
-
-    // Bloco try catch para garantir que a aplicação não finalize depois de gerar uma exceção
-    try {
-        if (consultaController.delete(cpf, data, horaInicial)) { // Chamada da função do Controller de consulta para excluir uma consulta
-            console.log("Agendamento cancelado com sucesso!"); // Imprime a mensagem de sucesso
-            console.log(" ");
-            await menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de cancelamento
+    for(;;) {
+        // Inicialização das variáveis através de entradas no console
+        let cpf = prompt("CPF: ");
+        let data = prompt("Data da consulta: ");
+        let horaInicial = prompt("Hora inicial: ");
+    
+        // Bloco try catch para garantir que a aplicação não finalize depois de gerar uma exceção
+        try {
+            if (await consultaController.delete(cpf, data, horaInicial)) { // Chamada da função do Controller de consulta para excluir uma consulta
+                console.log("Agendamento cancelado com sucesso!"); // Imprime a mensagem de sucesso
+                console.log(" ");
+                await menuAgenda(); // Chamada do Menu de Agenda novamente ao final do processo de cancelamento
+            }
         }
-    }
-    catch (err) { // Caso uma exceção seja lançada, coleta a mensagem
-        console.log(err); // Imprime a mensagem da exceção
-        console.log(" ");
-        await cancelaConsulta(); // Chama novamente a função de cancelar uma consulta para uma nova tentativa
+        catch (err) { // Caso uma exceção seja lançada, coleta a mensagem
+            console.log(err); // Imprime a mensagem da exceção
+            console.log(" ");
+        }
     }
 }
 
 // Função que inicia a listagem da agenda
 async function listarAgenda() {
-    // Inicialização das variáveis através de entradas no console
-    let tipoLista = prompt("Apresentar a agenda T-Toda ou P-Periodo: ");
-
-    // Validações de entrada
-    if (tipoLista === "T") {
-        console.log(" ");
-        await listarAgendaT(); // Chamada da função que inicia a listagem total da agenda
-    } else if (tipoLista === "P") {
-        console.log(" ");
-        await listarAgendaP(); // Chamada da funçaõ que inicia a listagem parcial da agenda
-    } else {
-        // Caso a entrada seja inválida, imprime a mensagem e chama a função de lsitar agenda novamente
-        console.log(" ");
-        console.log("Selecione uma opção válida do menu: ");
-        console.log(" ");
-        await listarAgenda();
+    for(;;) {
+        // Inicialização das variáveis através de entradas no console
+        let tipoLista = prompt("Apresentar a agenda T-Toda ou P-Periodo: ");
+    
+        // Validações de entrada
+        if (tipoLista === "T") {
+            console.log(" ");
+            await listarAgendaT(); // Chamada da função que inicia a listagem total da agenda
+        } else if (tipoLista === "P") {
+            console.log(" ");
+            await listarAgendaP(); // Chamada da funçaõ que inicia a listagem parcial da agenda
+        } else {
+            // Caso a entrada seja inválida, imprime a mensagem e chama a função de lsitar agenda novamente
+            console.log(" ");
+            console.log("Selecione uma opção válida do menu: ");
+            console.log(" ");
+        }
     }
 }
 
 // Função que inicia o processo e listar a agenda total
 async function listarAgendaT() {
     // Coleta a lista de consultas em uma variável através da função de listar agenda toda do Controller de consulta
-    let consultas = consultaController.listarAgendaToda();
+    let consultas = await consultaController.listarAgendaToda();
 
     // Bloco que imprime o layout de listagem
     console.log("------------------------------------------------------------");
@@ -300,7 +308,7 @@ async function listarAgendaP() {
     let dataFin = prompt("Data final: ");
 
     // Coleta a lista de consultas em uma variável através da função de listar agenda toda do Controller de consulta
-    let consultas = consultaController.listarAgendaParcial(dataIni, dataFin);
+    let consultas = await consultaController.listarAgendaParcial(dataIni, dataFin);
 
     // Bloco que imprime o layout de listagem
     console.log("------------------------------------------------------------");

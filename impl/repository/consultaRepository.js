@@ -1,54 +1,89 @@
-//import { consultas } from "../data/consultas.js";
+import Consultas from "../data/consultas.js";
 
-export default class ConsultaRepository {
-//    consultasList = consultas; // Instância da lista de consultas importada
-    
+export default class ConsultaRepository {    
     // Função para salvar uma consulta na lista de consultas
-    save(consulta) {
-        consultas.push(consulta); // Usa a função push() da lista para adicionar a consulta
+    async save(consulta) {
+        await Consultas.create({ cpfPaciente: consulta.cpfPaciente, data: consulta.data, horaInicial: consulta.horaInicial, horaFinal: consulta.horaFinal }); // Usa a função push() da lista para adicionar a consulta
         return true;
     }
 
     // Função para deletar uma consulta da lista de consultas
-    delete(cpf, data, horaInicial) {
-        // Percorre a lista de consultas buscando por cpf do paciente, data e hora inicial
-        for (let index = 0; index < consultas.length; index++) {
-            if (consultas[index].cpfPaciente === cpf && consultas[index].data === data && consultas[index].horaInicial === horaInicial) {
-                consultas.splice(index, 1); // Deleta a consulta usando a função splice() da lista
-                return true; // Retorna true caso haja a deleção
-            }
+    async delete(cpf, dataConsulta, hora) {
+        try {
+            await Consultas.destroy({
+                where: {
+                    cpfPaciente: cpf,
+                    data: dataConsulta,
+                    horaInicial: hora
+                }
+            });
+            return true;
+        } catch (error) {
+            return false;
         }
-
-        return false; // Retorna "N/A" caso não encontre o paciente
     }
 
     // Função para buscar uma consulta através do CPF do paciente
-    findByCpf(cpf) {
-        // Percorre a lista de consultas buscando por cpf do paciente
-        for (let index = 0; index < consultas.length; index++) {
-            if (consultas[index].cpfPaciente === cpf) {
-                return consultas[index]; // Retorna a consulta encontrada
-            }
-        }
+    async findByCpf(cpf) {
+        try {
+            const consulta = await Consultas.findAll({
+                where: {
+                  cpfPaciente: cpf
+                }
+              });
 
-        return "N/A"; // Retorna "N/A" caso não encontre o paciente
+              if (consulta.length === 0) {
+                return "N/A";
+              } else {
+                return paciente[0];
+              }
+        } catch (error) {
+            return "N/A";   
+        }
+    }
+
+    async findAllByCpf(cpf) {
+        try {
+            const consulta = await Consultas.findAll({
+                where: {
+                  cpfPaciente: cpf
+                }
+              });
+
+              if (consulta.length === 0) {
+                return "N/A";
+              } else {
+                return paciente;
+              }
+        } catch (error) {
+            return "N/A";   
+        }
     }
 
     // Função para buscar uma consulta através da data
-    findByData(data, horaInicial) {
-        // Percorre a lista de consultas buscando por data e hora inicial
-        for (let index = 0; index < consultas.length; index++) {
-            if (consultas[index].data === data && consultas[index].horaInicial === horaInicial) {
-                return consultas[index]; // Retorna a consulta encontrada
-            }
-        }
+    async findByData(dataConsulta, hora) {
+        try {
+            const consulta = await Consultas.findAll({
+                where: {
+                  data: dataConsulta,
+                  horaInicial: hora
+                }
+              });
 
-        return "N/A"; // Retorna "N/A" caso não encontre o paciente
+              if (consulta.length === 0) {
+                return "N/A";
+              } else {
+                return paciente[0];
+              }
+        } catch (error) {
+            return "N/A";   
+        }
     }
 
     // Função que gera uma lista de consultas ordenada por data
-    getAll() {
-        let list = consultas.sort((a, b) => (a.data > b.data) ? 1 : (a.data === b.data) ? ((a.horaInicial > b.horaInicial) ? 1 : -1) : -1); // Usando a função sort() da lista, gera uma lista ordenada pelo atributo data e armazena em uma outra lista
+    async getAll() {
+        const consulta = await Consultas.findAll();
+        let list = consulta.sort((a, b) => (a.data > b.data) ? 1 : (a.data === b.data) ? ((a.horaInicial > b.horaInicial) ? 1 : -1) : -1); // Usando a função sort() da lista, gera uma lista ordenada pelo atributo data e armazena em uma outra lista
 
         return list; // Retorna a lista gerada
     }

@@ -1,8 +1,4 @@
-import { DataTypes, Model } from "sequelize";
-import { sequelize } from "../utils/database.js";
-import Paciente from "./paciente.js";
-
-export default class Consulta extends Model {
+export default class Consulta {
     // Atributos da consulta
     #cpfPaciente;
     #data;
