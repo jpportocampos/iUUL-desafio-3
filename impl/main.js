@@ -10,17 +10,19 @@ const prompt = PromptSync({ sigint: true }); // Criação do leitor de entradas 
 const pacienteController = new PacienteController(); // Criação da instância do Controller de Paciente
 const consultaController = new ConsultaController(); // Criação da instância do Controller de Consulta
 
+// Bloco try catch para a conexão com o banco
 try {
-    await sequelize.authenticate();
+    await sequelize.authenticate(); // autentica com o banco através da constante 'sequelize' importada de ../utils, alterar a constante para conectar com um banco diferente do selecionado
     console.log('Connection has been established successfully.');
   } catch (error) {
     console.error('Unable to connect to the database:', error);
   }
 
+// Inicia as instâncias dos Models do sequelize
 await Pacientes.init(sequelize);
 await Consultas.init(sequelize);
 
-await sequelize.sync();
+await sequelize.sync(); // Sincroniza com o banco de dados
 
 await menuPrincipal(); // Chamada da função que inicia o Menu Principal
 
@@ -95,8 +97,8 @@ async function menuCadastro() {
 
 // Função que inicia o Menu de Agenda
 async function menuAgenda() {
+    // Bloco que imprime no console as opções do Menu de Agenda
     for(;;) {
-        // Bloco que imprime no console as opções do Menu de Agenda
     console.log("Agenda: ");
     console.log("1-Agendar consulta ");
     console.log("2-Cancelar agendamento ");
